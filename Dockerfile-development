@@ -1,0 +1,74 @@
+# 使用Ubuntu 22.04作为基础镜像
+FROM iregistry.baidu-int.com/hub-official/ubuntu:22.04
+
+# 维护者信息
+LABEL maintainer="Dev Team <dev@example.com>"
+
+# 设置非交互式安装，避免apt命令等待用户输入
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 更新软件包并安装必要的工具
+RUN apt-get update && apt-get install -y \
+    git \
+    procps \
+    openssh-client \
+    wget \
+    unzip \
+    curl \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# 安装Java 21
+RUN wget -O jdk-21_linux-x64_bin.tar.gz https://download.oracle.com/java/21/latest/jdk-21_linux-aarch64_bin.tar.gz && \
+    mkdir -p /usr/java && \
+    tar -zxvf jdk-21_linux-x64_bin.tar.gz -C /usr/java && \
+    rm -f jdk-21_linux-x64_bin.tar.gz
+
+# 配置Java环境变量
+ENV JAVA_HOME=/usr/java/jdk-21.0.4
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+RUN wget -O apache-maven-3.9.6-bin.tar.gz https://dlcdn.apache.org/maven/maven-3/3.9.11/binaries/apache-maven-3.9.11-bin.tar.gz && \
+    tar -zxvf apache-maven-3.9.6-bin.tar.gz -C /opt && \
+    rm -f apache-maven-3.9.6-bin.tar.gz
+
+# 修正Maven环境变量（确保路径正确）
+ENV MAVEN_HOME=/opt/apache-maven-3.9.6
+ENV PATH=$MAVEN_HOME/bin:$PATH
+
+# 创建非root用户用于安全运行
+RUN useradd -ms /bin/bash developer && \
+    mkdir -p /home/developer/.m2 && \
+    chown -R developer:developer /home/developer
+
+# 设置工作目录
+WORKDIR /app
+
+# 先复制pom.xml文件并下载依赖（利用Docker缓存）
+COPY --chown=developer:developer pom.xml /app/
+COPY --chown=developer:developer annot/pom.xml /app/annot/
+COPY --chown=developer:developer core/pom.xml /app/core/
+COPY --chown=developer:developer distribution/pom.xml /app/distribution/
+COPY --chown=developer:developer starter/pom.xml /app/starter/
+COPY --chown=developer:developer war/pom.xml /app/war/
+COPY --chown=developer:developer test/pom.xml /app/test/
+COPY --chown=developer:developer maven-plugin/pom.xml /app/maven-plugin/
+
+# 切换到developer用户
+USER developer
+
+# 配置Maven下载依赖
+RUN mvn dependency:go-offline || true
+
+# 复制项目源代码
+COPY --chown=developer:developer . /app/
+
+# 设置环境变量，用于调试
+ENV JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+ENV MAVEN_OPTS="-Xmx2g"
+
+# 暴露应用端口和调试端口
+EXPOSE 8080 5005
+
+# 默认命令，构建并运行应用
+# CMD ["sh", "-c", "mvn clean install && ./distribution/router/membrane.sh"]
