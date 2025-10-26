@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Sat Oct 25 10:29:30 GMT 2025:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.17.1.0 - (1913217): instance a816c00e-019a-1aea-8db2-000004cf6478 
+on database directory /app/core/test with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@639fee48 
+Loaded from file:/root/.m2/repository/org/apache/derby/derby/10.17.1.0/derby-10.17.1.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=21.0.9+7-LTS-338
+user.dir=/app/core
+os.name=Linux
+os.arch=amd64
+os.version=6.10.14-linuxkit
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''

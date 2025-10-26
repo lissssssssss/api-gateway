@@ -1,0 +1,30 @@
+<!--
+	 *** Membrane Configuration ***
+
+	 For more see:
+	 - proxies-*.xml files in this folder
+	 - The examples/* folders with working samples
+	 - Configuration Reference: https://www.membrane-api.io/docs/
+
+	 Direct Internet access is needed to run this configuration!
+     Otherwise, see proxies-offline.xml
+
+     Use an XML editor with XML Schema syntax completion for easy editing like
+	 Visual Studio Code or Intellij.
+
+-->
+<spring:beans xmlns="http://membrane-soa.org/proxies/1/"
+			  xmlns:spring="http://www.springframework.org/schema/beans"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://www.springframework.org/schema/beans
+	                    http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+	                    http://membrane-soa.org/proxies/1/ http://membrane-soa.org/schemas/proxies-1.xsd">
+<spring:bean id="myInterceptor" class="com.predic8.membrane.core.interceptor.MyInterceptor" />				
+	<router>
+		<serviceProxy port="8000">
+			<interceptor refid="myInterceptor" />
+			<target host="192.168.0.111" port="8081"/>
+		</serviceProxy>
+	</router>
+
+</spring:beans>

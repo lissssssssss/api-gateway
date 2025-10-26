@@ -1,0 +1,43 @@
+{
+    "name": "API Gateway Development",
+    // 使用项目中的 Dockerfile-development 构建镜像
+    "build": {
+        "dockerfile": "../Dockerfile-development"
+    },
+    // 设置工作目录
+    "workspaceFolder": "/app",
+    // 映射端口
+    "forwardPorts": [
+        8080,
+        5005
+    ],
+    // 挂载本地文件（可选，如果你想将代码放在容器内而不是挂载本地目录）
+    // "mounts": [
+    //     "source=${localWorkspaceFolder},target=/app,type=bind"
+    // ],
+    // 容器创建后执行的命令
+    "postCreateCommand": "mvn dependency:resolve",
+    // 配置终端
+    "customizations": {
+        "vscode": {
+            // 推荐安装的扩展
+            "extensions": [
+                "vscjava.vscode-java-pack",
+                "vscjava.vscode-java-debug",
+                "vscjava.vscode-maven",
+                "redhat.java",
+                "sonarsource.sonarlint-vscode"
+            ],
+            // 设置编辑器配置
+            "settings": {
+                "java.home": "/usr/java/jdk-21.0.4",
+                "maven.executable.path": "/opt/apache-maven-3.9.6/bin/mvn",
+                "terminal.integrated.shell.linux": "/bin/bash"
+            }
+        }
+    },
+    // 以 developer 用户身份运行
+    "remoteUser": "developer",
+    // 允许容器访问本地网络（用于调试等）
+    "networkMode": "host"
+}

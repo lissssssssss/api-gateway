@@ -11,8 +11,7 @@
  *    limitations under the License.
  */
 
-package com.predic8.membrane.examples.tests;
-
+package com.predic8.membrane.examples.withoutinternet.test;
 import com.predic8.membrane.examples.util.DistributionExtractingTestcase;
 import com.predic8.membrane.examples.util.Process2;
 import com.predic8.membrane.test.HttpAssertions;
